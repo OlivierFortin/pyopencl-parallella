@@ -1,0 +1,13 @@
+BOOST_INC_DIR = ['/usr/include/boost']
+BOOST_LIB_DIR = ['/usr/lib']
+BOOST_COMPILER = 'gcc43'
+BOOST_PYTHON_LIBNAME = ['boost_python-py27']
+USE_SHIPPED_BOOST = True
+CL_TRACE = False
+CL_ENABLE_GL = False
+CL_ENABLE_DEVICE_FISSION = True
+CL_INC_DIR = ['/usr/local/browndeer/include']
+CL_LIB_DIR = ['/usr/local/browndeer/lib']
+CL_LIBNAME = ['coprthr_opencl']
+CXXFLAGS = []
+LDFLAGS = []
