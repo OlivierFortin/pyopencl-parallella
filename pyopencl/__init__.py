@@ -924,7 +924,7 @@ enqueue_copy_buffer = _mark_copy_deprecated(_cl._enqueue_copy_buffer)
 if _cl.get_cl_header_version() >= (1, 1):
     enqueue_read_buffer_rect = _mark_copy_deprecated(_cl._enqueue_read_buffer_rect)
     enqueue_write_buffer_rect = _mark_copy_deprecated(_cl._enqueue_write_buffer_rect)
-    enqueue_copy_buffer_rect = _mark_copy_deprecated(_cl._enqueue_copy_buffer_rect)
+    # enqueue_copy_buffer_rect = _mark_copy_deprecated(_cl._enqueue_copy_buffer_rect)
 
 
 def enqueue_copy(queue, dest, src, **kwargs):
@@ -1033,8 +1033,8 @@ def enqueue_copy(queue, dest, src, **kwargs):
             if isinstance(src, MemoryObjectHolder):
                 if src.type == mem_object_type.BUFFER:
                     if "src_origin" in kwargs:
-                        return _cl._enqueue_copy_buffer_rect(
-                                queue, src, dest, **kwargs)
+                        # return _cl._enqueue_copy_buffer_rect(
+                        #         queue, src, dest, **kwargs)
                     else:
                         kwargs["dst_offset"] = kwargs.pop("dest_offset", 0)
                         return _cl._enqueue_copy_buffer(queue, src, dest, **kwargs)
@@ -1207,12 +1207,12 @@ def enqueue_barrier(queue, wait_for=None):
         return _cl._enqueue_marker(queue)
 
 
-def enqueue_fill_buffer(queue, mem, pattern, offset, size, wait_for=None):
-    if not (queue._get_cl_version() >= (1, 2) and get_cl_header_version() >= (1, 2)):
-        from warnings import warn
-        warn("The context for this queue does not declare OpenCL 1.2 support, so "
-                "the next thing you might see is a crash")
-    return _cl._enqueue_fill_buffer(queue, mem, pattern, offset, size, wait_for)
+# def enqueue_fill_buffer(queue, mem, pattern, offset, size, wait_for=None):
+#     if not (queue._get_cl_version() >= (1, 2) and get_cl_header_version() >= (1, 2)):
+#         from warnings import warn
+#         warn("The context for this queue does not declare OpenCL 1.2 support, so "
+#                 "the next thing you might see is a crash")
+#     return _cl._enqueue_fill_buffer(queue, mem, pattern, offset, size, wait_for)
 
 # }}}
 

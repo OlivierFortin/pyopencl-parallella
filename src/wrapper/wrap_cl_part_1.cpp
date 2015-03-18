@@ -278,14 +278,14 @@ void pyopencl_expose_part_1()
        py::arg("is_blocking")=true
        ),
       py::return_value_policy<py::manage_new_object>());
-  py::def("_enqueue_copy_buffer_rect", enqueue_copy_buffer_rect,
-      (py::args("queue", "src", "dst",
-                "src_origin", "dst_origin", "region"),
-       py::arg("src_pitches")=py::object(),
-       py::arg("dst_pitches")=py::object(),
-       py::arg("wait_for")=py::object()
-       ),
-      py::return_value_policy<py::manage_new_object>());
+  // py::def("_enqueue_copy_buffer_rect", enqueue_copy_buffer_rect,
+  //     (py::args("queue", "src", "dst",
+  //               "src_origin", "dst_origin", "region"),
+  //      py::arg("src_pitches")=py::object(),
+  //      py::arg("dst_pitches")=py::object(),
+  //      py::arg("wait_for")=py::object()
+  //      ),
+  //     py::return_value_policy<py::manage_new_object>());
 #endif
 
   // }}}
@@ -293,10 +293,10 @@ void pyopencl_expose_part_1()
   // }}}
 
 #if PYOPENCL_CL_VERSION >= 0x1020
-  py::def("_enqueue_fill_buffer", enqueue_fill_buffer,
-      (py::args("queue", "mem", "pattern", "offset", "size"),
-       py::arg("wait_for")=py::object()),
-      py::return_value_policy<py::manage_new_object>());
+  // py::def("_enqueue_fill_buffer", enqueue_fill_buffer,
+  //     (py::args("queue", "mem", "pattern", "offset", "size"),
+  //      py::arg("wait_for")=py::object()),
+  //     py::return_value_policy<py::manage_new_object>());
 #endif
 }
 

@@ -2119,59 +2119,59 @@ namespace pyopencl
       throw py::error_already_set();
 #endif
 
-    cl_event evt;
-    PYOPENCL_RETRY_IF_MEM_ERROR(
-      PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
-            cq.data(),
-            mem.data(),
-            PYOPENCL_CAST_BOOL(is_blocking),
-            buffer_origin, host_origin, region,
-            buffer_pitches[0], buffer_pitches[1],
-            host_pitches[0], host_pitches[1],
-            buf,
-            PYOPENCL_WAITLIST_ARGS, &evt
-            ))
-      );
-    PYOPENCL_RETURN_NEW_NANNY_EVENT(evt, ward);
-  }
+  //   cl_event evt;
+  //   PYOPENCL_RETRY_IF_MEM_ERROR(
+  //     PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
+  //           cq.data(),
+  //           mem.data(),
+  //           PYOPENCL_CAST_BOOL(is_blocking),
+  //           buffer_origin, host_origin, region,
+  //           buffer_pitches[0], buffer_pitches[1],
+  //           host_pitches[0], host_pitches[1],
+  //           buf,
+  //           PYOPENCL_WAITLIST_ARGS, &evt
+  //           ))
+  //     );
+  //   PYOPENCL_RETURN_NEW_NANNY_EVENT(evt, ward);
+  // }
 
 
 
 
-  inline
-  event *enqueue_copy_buffer_rect(
-      command_queue &cq,
-      memory_object_holder &src,
-      memory_object_holder &dst,
-      py::object py_src_origin,
-      py::object py_dst_origin,
-      py::object py_region,
-      py::object py_src_pitches,
-      py::object py_dst_pitches,
-      py::object py_wait_for)
-  {
-    PYOPENCL_PARSE_WAIT_FOR;
-    COPY_PY_COORD_TRIPLE(src_origin);
-    COPY_PY_COORD_TRIPLE(dst_origin);
-    COPY_PY_REGION_TRIPLE(region);
-    COPY_PY_PITCH_TUPLE(src_pitches);
-    COPY_PY_PITCH_TUPLE(dst_pitches);
+  // inline
+  // event *enqueue_copy_buffer_rect(
+  //     command_queue &cq,
+  //     memory_object_holder &src,
+  //     memory_object_holder &dst,
+  //     py::object py_src_origin,
+  //     py::object py_dst_origin,
+  //     py::object py_region,
+  //     py::object py_src_pitches,
+  //     py::object py_dst_pitches,
+  //     py::object py_wait_for)
+  // {
+  //   PYOPENCL_PARSE_WAIT_FOR;
+  //   COPY_PY_COORD_TRIPLE(src_origin);
+  //   COPY_PY_COORD_TRIPLE(dst_origin);
+  //   COPY_PY_REGION_TRIPLE(region);
+  //   COPY_PY_PITCH_TUPLE(src_pitches);
+  //   COPY_PY_PITCH_TUPLE(dst_pitches);
 
-    cl_event evt;
-    PYOPENCL_RETRY_IF_MEM_ERROR(
-      PYOPENCL_CALL_GUARDED(clEnqueueCopyBufferRect, (
-            cq.data(),
-            src.data(), dst.data(),
-            src_origin, dst_origin, region,
-            src_pitches[0], src_pitches[1],
-            dst_pitches[0], dst_pitches[1],
-            PYOPENCL_WAITLIST_ARGS,
-            &evt
-            ))
-      );
+  //   cl_event evt;
+  //   PYOPENCL_RETRY_IF_MEM_ERROR(
+  //     PYOPENCL_CALL_GUARDED(clEnqueueCopyBufferRect, (
+  //           cq.data(),
+  //           src.data(), dst.data(),
+  //           src_origin, dst_origin, region,
+  //           src_pitches[0], src_pitches[1],
+  //           dst_pitches[0], dst_pitches[1],
+  //           PYOPENCL_WAITLIST_ARGS,
+  //           &evt
+  //           ))
+  //     );
 
-    PYOPENCL_RETURN_NEW_EVENT(evt);
-  }
+  //   PYOPENCL_RETURN_NEW_EVENT(evt);
+  // }
 
 #endif
 
@@ -2180,20 +2180,20 @@ namespace pyopencl
   // }}}
 
 #if PYOPENCL_CL_VERSION >= 0x1020
-  inline
-  event *enqueue_fill_buffer(
-      command_queue &cq,
-      memory_object_holder &mem,
-      py::object pattern,
-      size_t offset,
-      size_t size,
-      py::object py_wait_for
-      )
-  {
-    PYOPENCL_PARSE_WAIT_FOR;
+  // inline
+  // event *enqueue_fill_buffer(
+  //     command_queue &cq,
+  //     memory_object_holder &mem,
+  //     py::object pattern,
+  //     size_t offset,
+  //     size_t size,
+  //     py::object py_wait_for
+  //     )
+  // {
+  //   PYOPENCL_PARSE_WAIT_FOR;
 
-    const void *pattern_buf;
-    PYOPENCL_BUFFER_SIZE_T pattern_len;
+  //   const void *pattern_buf;
+  //   PYOPENCL_BUFFER_SIZE_T pattern_len;
 
 #ifdef PYOPENCL_USE_NEW_BUFFER_INTERFACE
     std::auto_ptr<py_buffer_wrapper> ward(new py_buffer_wrapper);
