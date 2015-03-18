@@ -1505,42 +1505,9 @@ namespace pyopencl
 
 
 #if PYOPENCL_CL_VERSION >= 0x1010
-  class user_event : public event
-  {
-    public:
-      user_event(cl_event evt, bool retain)
-        : event(evt, retain)
-      { }
-
-      void set_status(cl_int execution_status)
-      {
-        PYOPENCL_CALL_GUARDED(clSetUserEventStatus, (data(), execution_status));
-      }
-  };
 
 
 
-
-  inline
-  event *create_user_event(context &ctx)
-  {
-    cl_int status_code;
-    PYOPENCL_PRINT_CALL_TRACE("clCreateUserEvent");
-    cl_event evt = clCreateUserEvent(ctx.data(), &status_code);
-
-    if (status_code != CL_SUCCESS)
-      throw pyopencl::error("UserEvent", status_code);
-
-    try
-    {
-      return new user_event(evt, false);
-    }
-    catch (...)
-    {
-      clReleaseEvent(evt);
-      throw;
-    }
-  }
 
 #endif
 

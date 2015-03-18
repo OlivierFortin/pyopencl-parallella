@@ -142,16 +142,7 @@ void pyopencl_expose_part_1()
 #endif
   py::def("_enqueue_barrier", enqueue_barrier, py::arg("queue"));
 
-#if PYOPENCL_CL_VERSION >= 0x1010
-  {
-    typedef user_event cls;
-    py::class_<cls, py::bases<event>, boost::noncopyable>("UserEvent", py::no_init)
-      .def("__init__", make_constructor(
-            create_user_event, py::default_call_policies(), py::args("context")))
-      .DEF_SIMPLE_METHOD(set_status)
-      ;
-  }
-#endif
+
 
   // }}}
 
