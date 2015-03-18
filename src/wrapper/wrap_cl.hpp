@@ -1505,9 +1505,42 @@ namespace pyopencl
 
 
 #if PYOPENCL_CL_VERSION >= 0x1010
+  // class user_event : public event
+  // {
+  //   public:
+  //     user_event(cl_event evt, bool retain)
+  //       : event(evt, retain)
+  //     { }
+
+  //     void set_status(cl_int execution_status)
+  //     {
+  //       PYOPENCL_CALL_GUARDED(clSetUserEventStatus, (data(), execution_status));
+  //     }
+  // };
 
 
 
+
+  // inline
+  // event *create_user_event(context &ctx)
+  // {
+  //   cl_int status_code;
+  //   PYOPENCL_PRINT_CALL_TRACE("clCreateUserEvent");
+  //   cl_event evt = clCreateUserEvent(ctx.data(), &status_code);
+
+  //   if (status_code != CL_SUCCESS)
+  //     throw pyopencl::error("UserEvent", status_code);
+
+  //   try
+  //   {
+  //     return new user_event(evt, false);
+  //   }
+  //   catch (...)
+  //   {
+  //     clReleaseEvent(evt);
+  //     throw;
+  //   }
+  // }
 
 #endif
 
@@ -2119,21 +2152,21 @@ namespace pyopencl
       throw py::error_already_set();
 #endif
 
-  //   cl_event evt;
-  //   PYOPENCL_RETRY_IF_MEM_ERROR(
-  //     PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
-  //           cq.data(),
-  //           mem.data(),
-  //           PYOPENCL_CAST_BOOL(is_blocking),
-  //           buffer_origin, host_origin, region,
-  //           buffer_pitches[0], buffer_pitches[1],
-  //           host_pitches[0], host_pitches[1],
-  //           buf,
-  //           PYOPENCL_WAITLIST_ARGS, &evt
-  //           ))
-  //     );
-  //   PYOPENCL_RETURN_NEW_NANNY_EVENT(evt, ward);
-  // }
+    cl_event evt;
+    PYOPENCL_RETRY_IF_MEM_ERROR(
+      PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
+            cq.data(),
+            mem.data(),
+            PYOPENCL_CAST_BOOL(is_blocking),
+            buffer_origin, host_origin, region,
+            buffer_pitches[0], buffer_pitches[1],
+            host_pitches[0], host_pitches[1],
+            buf,
+            PYOPENCL_WAITLIST_ARGS, &evt
+            ))
+      );
+    PYOPENCL_RETURN_NEW_NANNY_EVENT(evt, ward);
+  }
 
 
 
@@ -2180,20 +2213,20 @@ namespace pyopencl
   // }}}
 
 #if PYOPENCL_CL_VERSION >= 0x1020
-  // inline
-  // event *enqueue_fill_buffer(
-  //     command_queue &cq,
-  //     memory_object_holder &mem,
-  //     py::object pattern,
-  //     size_t offset,
-  //     size_t size,
-  //     py::object py_wait_for
-  //     )
-  // {
-  //   PYOPENCL_PARSE_WAIT_FOR;
+  inline
+  event *enqueue_fill_buffer(
+      command_queue &cq,
+      memory_object_holder &mem,
+      py::object pattern,
+      size_t offset,
+      size_t size,
+      py::object py_wait_for
+      )
+  {
+    PYOPENCL_PARSE_WAIT_FOR;
 
-  //   const void *pattern_buf;
-  //   PYOPENCL_BUFFER_SIZE_T pattern_len;
+    const void *pattern_buf;
+    PYOPENCL_BUFFER_SIZE_T pattern_len;
 
 #ifdef PYOPENCL_USE_NEW_BUFFER_INTERFACE
     std::auto_ptr<py_buffer_wrapper> ward(new py_buffer_wrapper);
