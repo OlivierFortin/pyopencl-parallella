@@ -1832,7 +1832,7 @@ namespace pyopencl
 
         return get_sub_region(start, end-start, my_flags);
       }
-#endif
+
   };
 
   // {{{ buffer creation
