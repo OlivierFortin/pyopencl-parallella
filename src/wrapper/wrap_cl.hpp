@@ -1783,39 +1783,36 @@ namespace pyopencl
         : memory_object(mem, retain, hostbuf)
       { }
 
-#if PYOPENCL_CL_VERSION >= 0x1010
-      buffer *get_sub_region(
-          size_t origin, size_t size, cl_mem_flags flags) const
-      {
-        cl_buffer_region region = { origin, size};
 
-        cl_mem mem = create_sub_buffer_gc(
-            data(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region);
+      // buffer *get_sub_region(
+      //     size_t origin, size_t size, cl_mem_flags flags) const
+      // {
+      //   cl_buffer_region region = { origin, size};
 
-        try
-        {
-          return new buffer(mem, false);
-        }
-        catch (...)
-        {
-          PYOPENCL_CALL_GUARDED(clReleaseMemObject, (mem));
-          throw;
-        }
-      }
+      //   cl_mem mem = create_sub_buffer_gc(
+      //       data(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region);
 
-      buffer *getitem(py::slice slc) const
-      {
-        PYOPENCL_BUFFER_SIZE_T start, end, stride, length;
+      //   try
+      //   {
+      //     return new buffer(mem, false);
+      //   }
+      //   catch (...)
+      //   {
+      //     PYOPENCL_CALL_GUARDED(clReleaseMemObject, (mem));
+      //     throw;
+      //   }
+      // }
 
-        size_t my_length;
-        PYOPENCL_CALL_GUARDED(clGetMemObjectInfo,
-            (data(), CL_MEM_SIZE, sizeof(my_length), &my_length, 0));
+      // buffer *getitem(py::slice slc) const
+      // {
+      //   PYOPENCL_BUFFER_SIZE_T start, end, stride, length;
 
-#if PY_VERSION_HEX >= 0x03020000
-        if (PySlice_GetIndicesEx(slc.ptr(),
-#else
-        if (PySlice_GetIndicesEx(reinterpret_cast<PySliceObject *>(slc.ptr()),
-#endif
+      //   size_t my_length;
+      //   PYOPENCL_CALL_GUARDED(clGetMemObjectInfo,
+      //       (data(), CL_MEM_SIZE, sizeof(my_length), &my_length, 0));
+
+         if (PySlice_GetIndicesEx(reinterpret_cast<PySliceObject *>(slc.ptr()),
+
               my_length, &start, &end, &stride, &length) != 0)
           throw py::error_already_set();
 
