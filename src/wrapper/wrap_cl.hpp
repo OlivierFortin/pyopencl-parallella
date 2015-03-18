@@ -1747,32 +1747,32 @@ namespace pyopencl
 
 
 #if PYOPENCL_CL_VERSION >= 0x1010
-  inline cl_mem create_sub_buffer(
-      cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type bct,
-      const void *buffer_create_info)
-  {
-    cl_int status_code;
-    PYOPENCL_PRINT_CALL_TRACE("clCreateSubBuffer");
-    cl_mem mem = clCreateSubBuffer(buffer, flags,
-        bct, buffer_create_info, &status_code);
+  // inline cl_mem create_sub_buffer(
+  //     cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type bct,
+  //     const void *buffer_create_info)
+  // {
+  //   cl_int status_code;
+  //   PYOPENCL_PRINT_CALL_TRACE("clCreateSubBuffer");
+  //   cl_mem mem = clCreateSubBuffer(buffer, flags,
+  //       bct, buffer_create_info, &status_code);
 
-    if (status_code != CL_SUCCESS)
-      throw pyopencl::error("clCreateSubBuffer", status_code);
+  //   if (status_code != CL_SUCCESS)
+  //     throw pyopencl::error("clCreateSubBuffer", status_code);
 
-    return mem;
-  }
-
-
+  //   return mem;
+  // }
 
 
-  inline cl_mem create_sub_buffer_gc(
-      cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type bct,
-      const void *buffer_create_info)
-  {
-    PYOPENCL_RETRY_RETURN_IF_MEM_ERROR(
-      return create_sub_buffer(buffer, flags, bct, buffer_create_info);
-    );
-  }
+
+
+  // inline cl_mem create_sub_buffer_gc(
+  //     cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type bct,
+  //     const void *buffer_create_info)
+  // {
+  //   PYOPENCL_RETRY_RETURN_IF_MEM_ERROR(
+  //     return create_sub_buffer(buffer, flags, bct, buffer_create_info);
+  //   );
+  // }
 #endif
 
 
