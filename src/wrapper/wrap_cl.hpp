@@ -2151,7 +2151,7 @@ namespace pyopencl
       throw py::error_already_set();
 #endif
 
-    cl_event evt;
+    // cl_event evt;
     // PYOPENCL_RETRY_IF_MEM_ERROR(
     //   PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
     //         cq.data(),
