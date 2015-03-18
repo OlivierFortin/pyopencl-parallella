@@ -1031,14 +1031,7 @@ def enqueue_copy(queue, dest, src, **kwargs):
     if isinstance(dest, MemoryObjectHolder):
         if dest.type == mem_object_type.BUFFER:
             if isinstance(src, MemoryObjectHolder):
-                if src.type == mem_object_type.BUFFER:
-                    if "src_origin" in kwargs:
-                        # return _cl._enqueue_copy_buffer_rect(
-                        #         queue, src, dest, **kwargs)
-                    else:
-                        kwargs["dst_offset"] = kwargs.pop("dest_offset", 0)
-                        return _cl._enqueue_copy_buffer(queue, src, dest, **kwargs)
-                elif src.type in [mem_object_type.IMAGE2D, mem_object_type.IMAGE3D]:
+                if src.type in [mem_object_type.IMAGE2D, mem_object_type.IMAGE3D]:
                     return _cl._enqueue_copy_image_to_buffer(
                             queue, src, dest, **kwargs)
                 else:

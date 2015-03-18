@@ -2153,19 +2153,19 @@ namespace pyopencl
 #endif
 
     cl_event evt;
-    PYOPENCL_RETRY_IF_MEM_ERROR(
-      PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
-            cq.data(),
-            mem.data(),
-            PYOPENCL_CAST_BOOL(is_blocking),
-            buffer_origin, host_origin, region,
-            buffer_pitches[0], buffer_pitches[1],
-            host_pitches[0], host_pitches[1],
-            buf,
-            PYOPENCL_WAITLIST_ARGS, &evt
-            ))
-      );
-    PYOPENCL_RETURN_NEW_NANNY_EVENT(evt, ward);
+    // PYOPENCL_RETRY_IF_MEM_ERROR(
+    //   PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
+    //         cq.data(),
+    //         mem.data(),
+    //         PYOPENCL_CAST_BOOL(is_blocking),
+    //         buffer_origin, host_origin, region,
+    //         buffer_pitches[0], buffer_pitches[1],
+    //         host_pitches[0], host_pitches[1],
+    //         buf,
+    //         PYOPENCL_WAITLIST_ARGS, &evt
+    //         ))
+    //   );
+    // PYOPENCL_RETURN_NEW_NANNY_EVENT(evt, ward);
   }
 
 
