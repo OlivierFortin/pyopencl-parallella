@@ -70,6 +70,7 @@
 
 #endif
 
+
 #if PY_VERSION_HEX >= 0x03000000
 #define PYOPENCL_USE_NEW_BUFFER_INTERFACE
 #endif
@@ -1504,42 +1505,42 @@ namespace pyopencl
 
 
 #if PYOPENCL_CL_VERSION >= 0x1010
-  // class user_event : public event
-  // {
-  //   public:
-  //     user_event(cl_event evt, bool retain)
-  //       : event(evt, retain)
-  //     { }
+  class user_event : public event
+  {
+    public:
+      user_event(cl_event evt, bool retain)
+        : event(evt, retain)
+      { }
 
-  //     void set_status(cl_int execution_status)
-  //     {
-  //       PYOPENCL_CALL_GUARDED(clSetUserEventStatus, (data(), execution_status));
-  //     }
-  // };
-
-
+      void set_status(cl_int execution_status)
+      {
+        PYOPENCL_CALL_GUARDED(clSetUserEventStatus, (data(), execution_status));
+      }
+  };
 
 
-  // inline
-  // event *create_user_event(context &ctx)
-  // {
-  //   cl_int status_code;
-  //   PYOPENCL_PRINT_CALL_TRACE("clCreateUserEvent");
-  //   cl_event evt = clCreateUserEvent(ctx.data(), &status_code);
 
-  //   if (status_code != CL_SUCCESS)
-  //     throw pyopencl::error("UserEvent", status_code);
 
-  //   try
-  //   {
-  //     return new user_event(evt, false);
-  //   }
-  //   catch (...)
-  //   {
-  //     clReleaseEvent(evt);
-  //     throw;
-  //   }
-  // }
+  inline
+  event *create_user_event(context &ctx)
+  {
+    cl_int status_code;
+    PYOPENCL_PRINT_CALL_TRACE("clCreateUserEvent");
+    cl_event evt = clCreateUserEvent(ctx.data(), &status_code);
+
+    if (status_code != CL_SUCCESS)
+      throw pyopencl::error("UserEvent", status_code);
+
+    try
+    {
+      return new user_event(evt, false);
+    }
+    catch (...)
+    {
+      clReleaseEvent(evt);
+      throw;
+    }
+  }
 
 #endif
 
@@ -1746,32 +1747,32 @@ namespace pyopencl
 
 
 #if PYOPENCL_CL_VERSION >= 0x1010
-  // inline cl_mem create_sub_buffer(
-  //     cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type bct,
-  //     const void *buffer_create_info)
-  // {
-  //   cl_int status_code;
-  //   PYOPENCL_PRINT_CALL_TRACE("clCreateSubBuffer");
-  //   cl_mem mem = clCreateSubBuffer(buffer, flags,
-  //       bct, buffer_create_info, &status_code);
+  inline cl_mem create_sub_buffer(
+      cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type bct,
+      const void *buffer_create_info)
+  {
+    cl_int status_code;
+    PYOPENCL_PRINT_CALL_TRACE("clCreateSubBuffer");
+    cl_mem mem = clCreateSubBuffer(buffer, flags,
+        bct, buffer_create_info, &status_code);
 
-  //   if (status_code != CL_SUCCESS)
-  //     throw pyopencl::error("clCreateSubBuffer", status_code);
+    if (status_code != CL_SUCCESS)
+      throw pyopencl::error("clCreateSubBuffer", status_code);
 
-  //   return mem;
-  // }
-
-
+    return mem;
+  }
 
 
-  // inline cl_mem create_sub_buffer_gc(
-  //     cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type bct,
-  //     const void *buffer_create_info)
-  // {
-  //   PYOPENCL_RETRY_RETURN_IF_MEM_ERROR(
-  //     return create_sub_buffer(buffer, flags, bct, buffer_create_info);
-  //   );
-  // }
+
+
+  inline cl_mem create_sub_buffer_gc(
+      cl_mem buffer, cl_mem_flags flags, cl_buffer_create_type bct,
+      const void *buffer_create_info)
+  {
+    PYOPENCL_RETRY_RETURN_IF_MEM_ERROR(
+      return create_sub_buffer(buffer, flags, bct, buffer_create_info);
+    );
+  }
 #endif
 
 
@@ -1783,36 +1784,39 @@ namespace pyopencl
         : memory_object(mem, retain, hostbuf)
       { }
 
+#if PYOPENCL_CL_VERSION >= 0x1010
+      buffer *get_sub_region(
+          size_t origin, size_t size, cl_mem_flags flags) const
+      {
+        cl_buffer_region region = { origin, size};
 
-      // buffer *get_sub_region(
-      //     size_t origin, size_t size, cl_mem_flags flags) const
-      // {
-      //   cl_buffer_region region = { origin, size};
+        cl_mem mem = create_sub_buffer_gc(
+            data(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region);
 
-      //   cl_mem mem = create_sub_buffer_gc(
-      //       data(), flags, CL_BUFFER_CREATE_TYPE_REGION, &region);
+        try
+        {
+          return new buffer(mem, false);
+        }
+        catch (...)
+        {
+          PYOPENCL_CALL_GUARDED(clReleaseMemObject, (mem));
+          throw;
+        }
+      }
 
-      //   try
-      //   {
-      //     return new buffer(mem, false);
-      //   }
-      //   catch (...)
-      //   {
-      //     PYOPENCL_CALL_GUARDED(clReleaseMemObject, (mem));
-      //     throw;
-      //   }
-      // }
+      buffer *getitem(py::slice slc) const
+      {
+        PYOPENCL_BUFFER_SIZE_T start, end, stride, length;
 
-      // buffer *getitem(py::slice slc) const
-      // {
-      //   PYOPENCL_BUFFER_SIZE_T start, end, stride, length;
+        size_t my_length;
+        PYOPENCL_CALL_GUARDED(clGetMemObjectInfo,
+            (data(), CL_MEM_SIZE, sizeof(my_length), &my_length, 0));
 
-      //   size_t my_length;
-      //   PYOPENCL_CALL_GUARDED(clGetMemObjectInfo,
-      //       (data(), CL_MEM_SIZE, sizeof(my_length), &my_length, 0));
-
-         if (PySlice_GetIndicesEx(reinterpret_cast<PySliceObject *>(slc.ptr()),
-
+#if PY_VERSION_HEX >= 0x03020000
+        if (PySlice_GetIndicesEx(slc.ptr(),
+#else
+        if (PySlice_GetIndicesEx(reinterpret_cast<PySliceObject *>(slc.ptr()),
+#endif
               my_length, &start, &end, &stride, &length) != 0)
           throw py::error_already_set();
 
@@ -1832,7 +1836,7 @@ namespace pyopencl
 
         return get_sub_region(start, end-start, my_flags);
       }
-
+#endif
   };
 
   // {{{ buffer creation
@@ -2148,59 +2152,59 @@ namespace pyopencl
       throw py::error_already_set();
 #endif
 
-    // cl_event evt;
-    // PYOPENCL_RETRY_IF_MEM_ERROR(
-    //   PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
-    //         cq.data(),
-    //         mem.data(),
-    //         PYOPENCL_CAST_BOOL(is_blocking),
-    //         buffer_origin, host_origin, region,
-    //         buffer_pitches[0], buffer_pitches[1],
-    //         host_pitches[0], host_pitches[1],
-    //         buf,
-    //         PYOPENCL_WAITLIST_ARGS, &evt
-    //         ))
-    //   );
-    // PYOPENCL_RETURN_NEW_NANNY_EVENT(evt, ward);
+    cl_event evt;
+    PYOPENCL_RETRY_IF_MEM_ERROR(
+      PYOPENCL_CALL_GUARDED_THREADED(clEnqueueWriteBufferRect, (
+            cq.data(),
+            mem.data(),
+            PYOPENCL_CAST_BOOL(is_blocking),
+            buffer_origin, host_origin, region,
+            buffer_pitches[0], buffer_pitches[1],
+            host_pitches[0], host_pitches[1],
+            buf,
+            PYOPENCL_WAITLIST_ARGS, &evt
+            ))
+      );
+    PYOPENCL_RETURN_NEW_NANNY_EVENT(evt, ward);
   }
 
 
 
 
-  // inline
-  // event *enqueue_copy_buffer_rect(
-  //     command_queue &cq,
-  //     memory_object_holder &src,
-  //     memory_object_holder &dst,
-  //     py::object py_src_origin,
-  //     py::object py_dst_origin,
-  //     py::object py_region,
-  //     py::object py_src_pitches,
-  //     py::object py_dst_pitches,
-  //     py::object py_wait_for)
-  // {
-  //   PYOPENCL_PARSE_WAIT_FOR;
-  //   COPY_PY_COORD_TRIPLE(src_origin);
-  //   COPY_PY_COORD_TRIPLE(dst_origin);
-  //   COPY_PY_REGION_TRIPLE(region);
-  //   COPY_PY_PITCH_TUPLE(src_pitches);
-  //   COPY_PY_PITCH_TUPLE(dst_pitches);
+  inline
+  event *enqueue_copy_buffer_rect(
+      command_queue &cq,
+      memory_object_holder &src,
+      memory_object_holder &dst,
+      py::object py_src_origin,
+      py::object py_dst_origin,
+      py::object py_region,
+      py::object py_src_pitches,
+      py::object py_dst_pitches,
+      py::object py_wait_for)
+  {
+    PYOPENCL_PARSE_WAIT_FOR;
+    COPY_PY_COORD_TRIPLE(src_origin);
+    COPY_PY_COORD_TRIPLE(dst_origin);
+    COPY_PY_REGION_TRIPLE(region);
+    COPY_PY_PITCH_TUPLE(src_pitches);
+    COPY_PY_PITCH_TUPLE(dst_pitches);
 
-  //   cl_event evt;
-  //   PYOPENCL_RETRY_IF_MEM_ERROR(
-  //     PYOPENCL_CALL_GUARDED(clEnqueueCopyBufferRect, (
-  //           cq.data(),
-  //           src.data(), dst.data(),
-  //           src_origin, dst_origin, region,
-  //           src_pitches[0], src_pitches[1],
-  //           dst_pitches[0], dst_pitches[1],
-  //           PYOPENCL_WAITLIST_ARGS,
-  //           &evt
-  //           ))
-  //     );
+    cl_event evt;
+    PYOPENCL_RETRY_IF_MEM_ERROR(
+      PYOPENCL_CALL_GUARDED(clEnqueueCopyBufferRect, (
+            cq.data(),
+            src.data(), dst.data(),
+            src_origin, dst_origin, region,
+            src_pitches[0], src_pitches[1],
+            dst_pitches[0], dst_pitches[1],
+            PYOPENCL_WAITLIST_ARGS,
+            &evt
+            ))
+      );
 
-  //   PYOPENCL_RETURN_NEW_EVENT(evt);
-  // }
+    PYOPENCL_RETURN_NEW_EVENT(evt);
+  }
 
 #endif
 
