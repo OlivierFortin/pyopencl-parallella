@@ -1,3 +1,5 @@
+DON'T WORK FOR NOW!!! 
+
 PyOpenCL lets you access GPUs and other massively parallel compute
 devices from Python. It tries to offer computing goodness in the
 spirit of its sister project `PyCUDA <http://mathema.tician.de/software/pycuda>`_:
